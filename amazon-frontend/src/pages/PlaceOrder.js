@@ -1,30 +1,29 @@
-import React, { useState,useEffect } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import "../styles/PlaceOrder.css"
-import CheckoutSteps from '../components/CheckoutSteps'
-import { Link } from 'react-router-dom'
-import { createdOrder } from '../actions/OrderAction'
-import { ORDER_CREATE_RESET } from '../constants/OrderConstant'
-import LoadingBox from "../components/LoadingBox"
-import MessageBox from "../components/MessageBox"
+import React, { useEffect } from 'react'; // Removed useState
+import { useDispatch, useSelector } from 'react-redux';
+import "../styles/PlaceOrder.css";
+import CheckoutSteps from '../components/CheckoutSteps';
+import { Link } from 'react-router-dom';
+import { createdOrder } from '../actions/OrderAction';
+import { ORDER_CREATE_RESET } from '../constants/OrderConstant';
+import LoadingBox from "../components/LoadingBox";
+import MessageBox from "../components/MessageBox";
 
 const PlaceOrder = (props) => {
-
     const cart = useSelector((state) => state.cart);
 
-    if(!cart.paymentMethod) {
+    if (!cart.paymentMethod) {
         props.history.push('/payment');
     }
 
     const orderCreate = useSelector((state) => state.orderCreate);
-    const {loading, success, error, order} = orderCreate;
+    const { loading, success, error, order } = orderCreate;
 
     const toPrice = (num) => Number(
         num.toFixed(2) // 5.123 => "5.12" => 5.12
     );
 
     cart.itemsPrice = toPrice(cart.cartItems.reduce(
-        (a,c) => a+c.qty * c.price, 0
+        (a, c) => a + c.qty * c.price, 0
     ));
 
     cart.shippingPrice = cart.itemsPrice > 100 ? toPrice(0) : toPrice(10);
@@ -34,20 +33,19 @@ const PlaceOrder = (props) => {
 
     const dispatch = useDispatch();
 
-    const placeOrder = () =>{
-        dispatch(createdOrder({...cart, orderItems: cart.cartItems}));
+    const placeOrder = () => {
+        dispatch(createdOrder({ ...cart, orderItems: cart.cartItems }));
     }
 
-
     useEffect(() => {
-        if(success){
+        if (success) {
             props.history.push(`/order/${order._id}`);
             dispatch({
                 type: ORDER_CREATE_RESET
             });
         }
-        
-    }, [dispatch, order, props.history, success])
+
+    }, [dispatch, order, props.history, success]);
 
     return (
         <div>
@@ -64,7 +62,7 @@ const PlaceOrder = (props) => {
                                 </p>
                                 <p>
                                     <strong>Address: </strong> {cart.shippingAddress.address},
-                                    {cart.shippingAddress.city},{cart.shippingAddress.postalcode},
+                                    {cart.shippingAddress.city}, {cart.shippingAddress.postalcode},
                                     {cart.shippingAddress.country}
                                 </p>
                             </div>
@@ -74,7 +72,7 @@ const PlaceOrder = (props) => {
                             <div className="card-body">
                                 <h2>Payment Method</h2>
                                 <p>
-                                    <strong>Method: </strong> {cart.paymentMethod} <br/>
+                                    <strong>Method: </strong> {cart.paymentMethod} <br />
                                 </p>
                             </div>
                         </li>
@@ -83,26 +81,26 @@ const PlaceOrder = (props) => {
                             <div className="card-body">
                                 <h2>Order Items</h2>
                                 <ul>
-                                {
-                                    cart.cartItems.map((item)=>(
-                                        <li key={item.product}>
-                                            <div className="row1 order-row1">
-                                                <div className="small">
-                                                    <img src={item.image}
-                                                    alt= ""
-                                                    ></img>
+                                    {
+                                        cart.cartItems.map((item) => (
+                                            <li key={item.product}>
+                                                <div className="row1 order-row1">
+                                                    <div className="small">
+                                                        <img src={item.image}
+                                                            alt=""
+                                                        ></img>
+                                                    </div>
+
+                                                    <div className="min-30">
+                                                        <Link to={`/products/product/${item.product}`}>{item.name}</Link>
+                                                    </div>
+
+                                                    <p>{item.qty} x ${item.price} = ${item.price * item.qty}</p>
+
                                                 </div>
-                                    
-                                                <div className="min-30">
-                                                    <Link to={`/products/product/${item.product}`}>{item.name}</Link>
-                                                </div>
-                                                
-                                                <p>{item.qty} x ${item.price} = ${item.price*item.qty}</p>
-                                                
-                                            </div>
-                                        </li>
-                                    ))
-                                }
+                                            </li>
+                                        ))
+                                    }
                                 </ul>
                             </div>
                         </li>
@@ -134,8 +132,8 @@ const PlaceOrder = (props) => {
 
                             <li>
                                 <button type="button" onClick={placeOrder}
-                                disabled = {cart.cartItems.length === 0}
-                                className="placeorder-btn">
+                                    disabled={cart.cartItems.length === 0}
+                                    className="placeorder-btn">
                                     Place order
                                 </button>
                             </li>
@@ -144,7 +142,7 @@ const PlaceOrder = (props) => {
                                 {error && <MessageBox variant="danger"></MessageBox>}
                             </li>
 
-                            
+
                         </ul>
                     </div>
                 </div>
@@ -153,4 +151,4 @@ const PlaceOrder = (props) => {
     )
 }
 
-export default PlaceOrder
+export default PlaceOrder;

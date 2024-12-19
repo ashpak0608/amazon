@@ -1,61 +1,29 @@
-import React from 'react'
+import React from 'react';
 import StarIcon from '@material-ui/icons/Star';
 import StarBorderIcon from '@material-ui/icons/StarBorder';
 import StarHalfIcon from '@material-ui/icons/StarHalf';
-import "../styles/Rating.css"
-import Product from './Product';
-
+import "../styles/Rating.css";
 
 const Rating = (props) => {
-    
-    const {rating, numRev} = props;
+    const { rating, numRev } = props;
+
+    // Function to determine the icon for each star
+    const getStarIcon = (index) => {
+        if (rating >= index) return <StarIcon />;
+        if (rating >= index - 0.5) return <StarHalfIcon />;
+        return <StarBorderIcon />;
+    };
 
     return (
         <div className="rating-container">
-
             <div className="rating">
-                { (rating>=1)
-                ? <StarIcon/>
-                : (rating === 0.5)
-                ? <StarHalfIcon/>
-                : <StarBorderIcon/>
-                }
-
-                { (rating>=2)
-                ? <StarIcon/>
-                : (rating === 1.5)
-                ? <StarHalfIcon/>
-                : <StarBorderIcon/>
-                }
-
-                { (rating>=3)
-                ? <StarIcon/>
-                : (rating === 2.5)
-                ? <StarHalfIcon/>
-                : <StarBorderIcon/>
-                }
-
-                { (rating>=4)
-                ? <StarIcon/>
-                : (rating === 3.5)
-                ? <StarHalfIcon/>
-                : <StarBorderIcon/>
-                }
-
-                { (rating===5)
-                ? <StarIcon/>
-                : (rating === 4.5)
-                ? <StarHalfIcon/>
-                : <StarBorderIcon/>
-                }
+                {Array.from({ length: 5 }, (_, index) => (
+                    <span key={index}>{getStarIcon(index + 1)}</span>
+                ))}
             </div>
-
             <span>{numRev} reviews</span>
-
-
         </div>
-        
-    )
-}
+    );
+};
 
-export default Rating
+export default Rating;

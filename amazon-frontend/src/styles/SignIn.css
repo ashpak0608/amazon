@@ -1,59 +1,119 @@
-.signin-container{
-    max-width: 600px;
-    margin: auto;
-    transform: translateY(50%);
+/* Ensure the html and body fill the entire viewport */
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%; /* Ensure full viewport height is used */
+    overflow-x: hidden; /* Prevent horizontal overflow */
 }
 
-.form{
-    margin: 0 30px;
+/* Isolate the Sign-In page container */
+.signin-container {
+    position: relative; /* Ensure it stacks properly */
+    z-index: 10; /* Higher than any overlapping element */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* Full viewport height */
+    background: linear-gradient(45deg, #f0c040, #f1a5c3); /* Gradient background */
+    padding: 0 20px; /* Avoid edges on smaller screens */
+    box-sizing: border-box;
+}
+
+/* Form Styling */
+.form {
+    width: 100%;
+    max-width: 400px;
+    background: white; /* Card-style form background */
+    border-radius: 10px;
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.1); /* Subtle shadow effect */
     padding: 40px;
-    border: solid 2px grey;
-    border-radius: 4px;
-    background-color: rgb(238, 238, 238);
+    box-sizing: border-box;
 }
 
-.form-ip-sec{
-    margin: 20px 0;
+/* Title Styling */
+h1 {
+    text-align: center;
+    color: #333; /* Neutral, readable color */
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 30px;
+}
+
+/* Form input section styling */
+.form-ip-sec {
+    margin-bottom: 20px;
     display: flex;
     flex-direction: column;
 }
 
-.form-ip-sec label{
-    color: rgb(78, 78, 78);
-    font-size: 14px;
-}
-
-.form-ip-sec input{
-    padding: 12px;
-    font-size: 18px;
-    margin-top: 10px;
-    border-radius: 4px;
-}
-
-.submit-btn{
-    background-color: #f0c040;
-    border-radius: 4px;
-    display: block;
-    width: 100%;
-    text-align: center;
-    padding: 10px;
-    cursor: pointer;
-    margin-top: 30px;
-    font-size: 18px;
-    outline: 0;
-}
-
-.new-user-register{
-    margin-top: 30px;
+/* Input labels */
+.form-ip-sec label {
+    color: #555;
     font-size: 16px;
+    margin-bottom: 6px;
+    font-weight: 600;
 }
-.new-user-register a{
-    color: blue;
+
+/* Input fields */
+.form-ip-sec input {
+    padding: 12px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    outline: none;
+    transition: border-color 0.3s ease;
+}
+
+.form-ip-sec input:focus {
+    border-color: #f0c040; /* Highlighted border on focus */
+}
+
+/* Submit button styling */
+.submit-btn {
+    background-color: #f0c040; /* Vibrant CTA button color */
+    color: white;
+    font-size: 18px;
+    padding: 12px;
+    border-radius: 6px;
+    width: 100%;
+    cursor: pointer;
+    border: none;
+    transition: background-color 0.3s ease;
+}
+
+.submit-btn:hover {
+    background-color: #e0a12b; /* Slightly darker on hover */
+}
+
+/* New user registration link styling */
+.new-user-register {
+    margin-top: 20px;
+    font-size: 16px;
+    text-align: center;
+}
+
+.new-user-register a {
+    color: #007bff; /* Standard link blue */
+    font-weight: bold;
+    text-decoration: none;
     margin-left: 6px;
 }
 
-@media(max-width: 900px){
-    .signin-container{
-        transform: translateY(36%);
+.new-user-register a:hover {
+    text-decoration: underline; /* Underline on hover */
+}
+
+/* Responsive styling for mobile screens */
+@media (max-width: 600px) {
+    .form {
+        padding: 30px; /* Adjust padding for smaller screens */
+    }
+
+    .submit-btn {
+        font-size: 16px; /* Smaller font size for buttons */
+    }
+
+    .form-ip-sec input {
+        font-size: 14px; /* Adjust input font size */
     }
 }

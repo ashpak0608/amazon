@@ -1,23 +1,24 @@
-import React from 'react'
-import Rating from './Rating'
-import "../styles/Product.css"
-import { Link } from 'react-router-dom'
+import React from 'react';
+import { Link } from 'react-router-dom';
+import Rating from './Rating';
 
+const Product = ({ product }) => {
+  const price = Number(product.price); // Convert to number if it's a string
 
-const Product = ({product}) => {
+  return (
+    <Link to={`/product/${product._id}`} className="product-link">
+      <div className="product-card">
+        {/* Ensure correct image path */}
+        <img
+          src={product.image ? product.image : '/images/default.jpg'} // If no image, use default.jpg
+          alt={product.name || 'Product'}
+        />
+        <h3>{product.name}</h3>
+        <Rating rating={product.rating || 0} numRev={product.numRev || 0} />
+        <p>${!isNaN(price) ? price.toFixed(2) : '0.00'}</p>
+      </div>
+    </Link>
+  );
+};
 
-    return (
-        <Link to={`/products/product/${product._id}`}>
-        <div className="product-card" >
-            <div className="product-image">
-                <img src= {product.image} alt=""/>
-            </div>
-            <h2>{product.name}</h2>
-            <Rating rating={product.rating} numRev={product.numRev}/>
-            <p>${product.price}</p>
-        </div>
-        </Link>
-    )
-}
-
-export default Product
+export default Product;

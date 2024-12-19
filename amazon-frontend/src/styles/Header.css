@@ -1,9 +1,10 @@
-*{
-    margin: 0;
-    padding: 0;
-    font-family: Arial, Helvetica, sans-serif;
+* {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, Helvetica, sans-serif;
 }
-a{
+
+a {
   text-decoration: none;
   color: black;
 }
@@ -11,6 +12,7 @@ a{
 header {
   background-color: #131A22;
   margin-bottom: 20px;
+  position: relative; /* Ensure that header itself has relative position */
 }
 
 header .inner-content {
@@ -18,52 +20,74 @@ header .inner-content {
   justify-content: space-between;
   align-items: center;
   padding: 14px 22px;
+  position: relative;
+  z-index: 10; /* Set z-index to ensure it stays above other content */
 }
 
-.category-container{
+/* Brand Styling */
+header .brand a {
+  color: white;
+  font-weight: 700;
+  font-size: 1.5rem;
+  transition: opacity 0.3s ease;
+}
+
+header .brand a:hover {
+  opacity: 0.7;
+}
+
+/* Category Navigation */
+.category-container {
   background-color: #232F3E;
   padding: 14px 22px;
   font-weight: 500;
   color: white;
 }
 
-.category-container ul{
+.category-container ul {
   list-style-type: none;
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
 }
 
-.category-container ul li{
-  display: inline-block;
+.category-container ul li {
   margin-right: 20px;
 }
 
-.category-container ul li a{
+.category-container ul li a {
   white-space: nowrap;
   font-size: 18px;
-}
-
-@media(max-width: 760px){
-  header .inner-content{flex-direction: column !important;}
-  .brand{margin-bottom: 30px;}
-}
-
-header a {
   color: white;
-  font-size: 1.1rem;
-  text-decoration: none;
-  transition: all 0.3s ease;
 }
 
-header a:hover {
+.category-container ul li a:hover {
   opacity: 0.7;
 }
 
-header .brand a {
-  font-weight: 700;
-  font-size: 1.5rem;
+/* Mobile Layout Adjustments */
+@media (max-width: 760px) {
+  header .inner-content {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .brand {
+    margin-bottom: 30px;
+  }
+
+  .category-container {
+    margin-top: 16px;
+  }
+
+  .category-container ul {
+    display: flex;
+    overflow-x: scroll;
+  }
 }
 
-
-.search-bar{
+/* Search Bar Styling */
+.search-bar {
   display: flex;
   align-items: center;
   border-radius: 6px;
@@ -72,7 +96,7 @@ header .brand a {
   background-color: #f0c040;
 }
 
-.search-input{
+.search-input {
   padding: 12px;
   font-size: 18px;
   width: 100%;
@@ -80,52 +104,66 @@ header .brand a {
   border: 0;
 }
 
-.search-btn{
+.search-btn {
   cursor: pointer;
   text-align: center;
   outline: 0;
   border: 0;
   display: block;
 }
-.search-btn a{
+
+.search-btn a {
   display: block;
   color: #000000;
   padding: 6px;
 }
 
-
-
+/* Navigation Links */
 header .nav-links {
   padding: 0;
   margin: 0;
   list-style: none;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end; /* Align to the right */
+  position: relative;
+  z-index: 20; /* Ensure nav items are above other content */
 }
 
 header .nav-links li {
   display: inline-block;
   margin-left: 30px;
+  position: relative;
+  z-index: 20; /* Ensure the icon stays above other elements */
 }
 
-.header-dropdown{
+header .nav-links li a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 20; /* Ensure icons are clickable and above other content */
+}
+
+/* User Dropdown */
+.header-dropdown {
   border: solid 1px white;
   padding: 6px 10px;
   border-radius: 6px;
   position: relative;
   color: white;
   min-width: 160px;
+  z-index: 10;
 }
 
-.header-dropdown p{
+.header-dropdown p {
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
-.dropdown-content{
+.dropdown-content {
   background-color: #131A22;
   position: absolute;
   display: none;
@@ -134,36 +172,23 @@ header .nav-links li {
   margin-top: 20px;
   border: solid 1px white;
   border-radius: 6px;
-  z-index: 555;
+  z-index: 5;
 }
 
-.dropdown-content li{
+.dropdown-content li {
   margin: 14px;
 }
 
-.dropdown-content.show{
-  background-color: #131A22;
-  position: absolute;
+.dropdown-content.show {
   display: block;
-  right: 0;
-  width: 100%;
-  margin-top: 20px;
-  border: solid 1px white;
-  border-radius: 6px;
 }
 
-
-.nav-links li a {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.header-user-name{
+/* User Name and Badge */
+.header-user-name {
   margin-left: 14px;
 }
 
-.badge{
+.badge {
   background-color: red;
   color: white;
   width: 16px;
@@ -175,31 +200,45 @@ header .nav-links li {
   margin-left: 6px;
 }
 
-@media(max-width: 900px){
-    .search-bar{
-      width: 100%;
-      margin-bottom: 30px;
-    }
+/* Fix for Cart and Sign-In Icons */
+.nav-links li a svg {
+  font-size: 24px; /* Adjust the icon size */
+  color: white;
+  z-index: 20; /* Ensure the icons are clickable and above other content */
+}
 
-    .nav-links{
-      flex-direction: row-reverse;
-      justify-content: center;
-    }
+/* Mobile View Improvements */
+@media (max-width: 900px) {
+  .search-bar {
+    width: 100%;
+    margin-bottom: 30px;
+  }
 
-    header .brand a{
-      font-size: 1.2rem;
-    }
-    header .brand{
-      margin-bottom: 10px;
-    }
+  .nav-links {
+    flex-direction: row-reverse;
+    justify-content: center;
+  }
 
-    .category-container{
-      margin-top: 16px;
-    }
+  .nav-links li {
+    margin-left: 15px; /* Reduced margin for better space */
+    position: relative; /* Ensure icons are not hidden */
+    z-index: 20; /* Ensure icons are clickable and visible */
+  }
 
-    .category-container ul{
-      display: flex;
-      overflow-x: scroll;
-    }
+  header .brand a {
+    font-size: 1.2rem;
+  }
 
+  header .brand {
+    margin-bottom: 10px;
+  }
+
+  .category-container {
+    margin-top: 16px;
+  }
+
+  .category-container ul {
+    display: flex;
+    overflow-x: auto;
+  }
 }

@@ -1,50 +1,57 @@
-import React,{useEffect} from 'react'
-import { useSelector , useDispatch} from 'react-redux'
-import '../styles/ProductList.css'
-import Product from './Product'
-import LoadingBox from "./LoadingBox"
-import MessageBox from "./MessageBox"
-import { listProducts } from '../actions/ProdcutActions'
+import React from 'react';
+import PropTypes from 'prop-types'; // Import PropTypes for type checking
 
-const ProductList = () => {
+const Product = ({ product }) => {
+  return (
+    <div className="product-card">
+      <img
+        src={product.imageUrl || '/default.jpg'} // Fallback to default image if no product image is provided
+        alt={product.name}
+        className="product-image"
+      />
+      <h3 className="product-name">{product.name}</h3>
+      <p className="product-price">${product.price}</p>
+      <p className="product-description">{product.description}</p>
+    </div>
+  );
+};
 
-    const dispatch = useDispatch();
+// Define PropTypes for validation
+Product.propTypes = {
+  product: PropTypes.shape({
+    id: PropTypes.number.isRequired,
+    name: PropTypes.string.isRequired,
+    price: PropTypes.number.isRequired,
+    description: PropTypes.string.isRequired,
+    imageUrl: PropTypes.string,
+  }).isRequired,
+};
 
-    const productList = useSelector( state => state.productList);
-    const {loading,error,products} = productList;
+const ProductList = ({ products }) => {
+  return (
+    <div className="product-list">
+      {products && products.length > 0 ? (
+        products.map((product) => (
+          <Product key={product.id} product={product} />
+        ))
+      ) : (
+        <p>No products available</p>
+      )}
+    </div>
+  );
+};
 
+// Define PropTypes for validation
+ProductList.propTypes = {
+  products: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.number.isRequired,
+      name: PropTypes.string.isRequired,
+      price: PropTypes.number.isRequired,
+      description: PropTypes.string.isRequired,
+      imageUrl: PropTypes.string,
+    })
+  ).isRequired,
+};
 
-    useEffect(() => {
-        dispatch(listProducts());
-    }, [dispatch])
-
-
-    return (
-
-        <div className="home-product-container">
-            {loading ? <LoadingBox />
-            :
-            error ? <MessageBox variant="danger">{error}</MessageBox>
-            :
-            (
-                <>
-                <h2 className="sec-title">Products</h2>
-                <div className="product-container">
-                    {products.map((product)=>{
-                        return(
-                            <Product key={product._id} product={product}/> 
-                        )
-                        })
-                    }
-                </div>
-                </>
-            )
-            }
-
-        </div>
-            
-        
-    )
-}
-
-export default ProductList
+export default ProductList;

@@ -1,98 +1,83 @@
-import express from 'express'
-import expressAsyncHandler from 'express-async-handler';
-import User from '../models/userModel.js';
-import {users} from "../users.js"
-import bcrypt from "bcryptjs"
-import { generateToken, isAuth } from '../utils.js';
+import express from 'express';
+import bcrypt from 'bcryptjs';
+import { generateToken, isAuth, isAdmin } from '../utils.js'; // Import middlewares
+import { getUserByEmail, createUser } from '../models/userModel.js'; // MySQL queries
 
-const userRouter = express.Router();
+const router = express.Router();
 
+// **Signin Route**
+router.post('/signin', async (req, res) => {
+    const { email, password } = req.body;
 
-userRouter.get('/seed', async(req,res) => {
-    const createdUsers = await User.insertMany(users);
-    res.send( {createdUsers} );
-})
+    try {
+        const user = await getUserByEmail(email);
 
-
-userRouter.post("/signin", expressAsyncHandler(async(req,res) => {
-    const user = await User.findOne({email: req.body.email});
-
-    if(user){
-        if(bcrypt.compareSync(req.body.password, user.password)){
+        if (user && bcrypt.compareSync(password, user.password)) {
             res.send({
-                _id: user._id,
+                _id: user.id,
                 name: user.name,
                 email: user.email,
                 isAdmin: user.isAdmin,
                 token: generateToken(user),
             });
-            return;
+        } else {
+            res.status(401).send({ message: 'Invalid email or password' });
         }
+    } catch (error) {
+        console.error('Error during signin:', error);
+        res.status(500).send({ message: 'Error during signin' });
     }
+});
 
-    res.status(401).send({message: "Invalid email or password."});
-}))
+// **Register Route**
+router.post('/register', async (req, res) => {
+    const { name, email, password } = req.body;
 
+    try {
+        const userExists = await getUserByEmail(email);
+        if (userExists) {
+            return res.status(400).send({ message: 'User already exists' });
+        }
 
+        const newUser = await createUser(name, email, password, false);
 
-userRouter.post("/register", expressAsyncHandler(async (req,res) => {
-    const user  = new User({
-        name: req.body.name,
-        email: req.body.email,
-        password: bcrypt.hashSync(req.body.password, 8)
-    });
-
-
-    const createdUser = await user.save();
-    res.send({
-        _id: createdUser._id,
-        name: createdUser.name,
-        email: createdUser.email,
-        isAdmin: createdUser.isAdmin,
-        token: generateToken(createdUser),
-    })
-}));
-
-
-userRouter.get('/:id', expressAsyncHandler(async(req,res) => {
-    const user = await User.findById(req.params.id);
-
-    if(user){
-        res.send(user);
+        res.send({
+            _id: newUser.id,
+            name: newUser.name,
+            email: newUser.email,
+            isAdmin: newUser.isAdmin,
+            token: generateToken(newUser),
+        });
+    } catch (error) {
+        console.error('Error during registration:', error);
+        res.status(500).send({ message: 'Error during registration' });
     }
-    else{
-        res.status(404).send({
-            message: 'User not found'
-        })
+});
+
+// **Profile Route** (Protected Route)
+router.get('/profile', isAuth, async (req, res) => {
+    try {
+        const user = await getUserByEmail(req.user.email);
+        if (user) {
+            res.send({
+                _id: user.id,
+                name: user.name,
+                email: user.email,
+                isAdmin: user.isAdmin,
+            });
+        } else {
+            res.status(404).send({ message: 'User not found' });
+        }
+    } catch (error) {
+        console.error('Error fetching profile:', error);
+        res.status(500).send({ message: 'Error fetching profile' });
     }
-}));
+});
 
+// **Admin Route Example** (Protected Route)
+router.get('/admin-only', isAuth, isAdmin, (req, res) => {
+    res.send({ message: 'Access granted to admin' });
+});
 
-
-userRouter.put(
-  '/profile',
-  isAuth,
-  expressAsyncHandler(async (req, res) => {
-    const user = await User.findById(req.user._id);
-    if (user) {
-      user.name = req.body.name || user.name;
-      user.email = req.body.email || user.email;
-      
-      if (req.body.password) {
-        user.password = bcrypt.hashSync(req.body.password, 8);
-      }
-      const updatedUser = await user.save();
-      res.send({
-        _id: updatedUser._id,
-        name: updatedUser.name,
-        email: updatedUser.email,
-        isAdmin: updatedUser.isAdmin,
-        token: generateToken(updatedUser),
-      });
-    }
-  })
-);
-
-
-
-export default userRouter;
+// **Export the Router**
+export default router;

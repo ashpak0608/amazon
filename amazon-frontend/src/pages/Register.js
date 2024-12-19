@@ -1,111 +1,94 @@
-import React, {useState, useEffect} from 'react'
-import { useDispatch, useSelector } from 'react-redux';
-import {Link} from 'react-router-dom'
-import { register} from '../actions/UserAction';
-import LoadingBox from '../components/LoadingBox';
-import MessageBox from '../components/MessageBox';
-import "../styles/Register.css"
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
+import '../styles/Register.css';
 
-const Register = (props) => {
-
+const Registration = () => {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [confirmpassword, setConfirmPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const [error, setError] = useState('');
 
-    const redirect = props.location.search
-        ? props.location.search.split('=')[1]
-        : '/';
-
-    const userRegister = useSelector((state) => state.userRegister);
-    const { userInfo, loading, error } = userRegister;
-
-    const dispatch = useDispatch();
-
-    const registerHandler = (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault();
-        if(password !== confirmpassword){
-            alert("Password does not match.")
+        if (password !== confirmPassword) {
+            setError('Passwords do not match.');
+        } else {
+            setError('');
+            // Submit registration data to backend
+            console.log({ name, email, password });
         }
-        else{
-            dispatch(register(name,email,password));
-        }
-        
-    }
-
-    useEffect(()=>{
-        if(userInfo){
-            props.history.push(redirect);
-        }
-    }, [props.history, redirect ,userInfo])
-    
-
-
+    };
 
     return (
-        <div className="register-container">
-            <form className="form" onSubmit={registerHandler}>
-                <div>
-                    <h1>Register</h1>
-                </div>
-                {loading && <LoadingBox></LoadingBox>}
-                {error && <MessageBox variant="danger">{error}</MessageBox>}
+        <div className="registration-container">
+            <div className="registration-card">
+                <h2 className="registration-title">Create Account</h2>
 
-                <div className="form-ip-sec">
-                    <label htmlFor="name">Name:</label>
-                    <input type="text" id="name"
-                    placeholder="Enter full name"
-                    required
-                    onChange={(e) => setName(e.target.value)}>
-                    </input>
-                </div>
+                {error && <div className="error-message">{error}</div>}
 
-                <div className="form-ip-sec">
-                    <label htmlFor="email">E-mail:</label>
-                    <input type="email" id="email"
-                    placeholder="Enter email"
-                    required
-                    onChange={(e) => setEmail(e.target.value)}>
-                    </input>
-                </div>
+                <form className="registration-form" onSubmit={handleSubmit}>
+                    <div className="form-group">
+                        <label htmlFor="name">Name</label>
+                        <input
+                            type="text"
+                            id="name"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                            placeholder="Enter your name"
+                            required
+                        />
+                    </div>
 
-                <div className="form-ip-sec">
-                    <label htmlFor="password">Password:</label>
-                    <input type="password" id="password"
-                    placeholder="Enter password"
-                    required
-                    onChange={(e) => setPassword(e.target.value)}>
-                    </input>
-                </div>
+                    <div className="form-group">
+                        <label htmlFor="email">Email Address</label>
+                        <input
+                            type="email"
+                            id="email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            placeholder="Enter your email"
+                            required
+                        />
+                    </div>
 
-                <div className="form-ip-sec">
-                    <label htmlFor="confirmpassword">Password:</label>
-                    <input type="password" id="confirmpassword"
-                    placeholder="Confirm password"
-                    required
-                    onChange={(e) => setConfirmPassword(e.target.value)}>
-                    </input>
-                </div>
+                    <div className="form-group">
+                        <label htmlFor="password">Password</label>
+                        <input
+                            type="password"
+                            id="password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            placeholder="Enter your password"
+                            required
+                        />
+                    </div>
 
+                    <div className="form-group">
+                        <label htmlFor="confirm-password">Confirm Password</label>
+                        <input
+                            type="password"
+                            id="confirm-password"
+                            value={confirmPassword}
+                            onChange={(e) => setConfirmPassword(e.target.value)}
+                            placeholder="Re-enter your password"
+                            required
+                        />
+                    </div>
 
-                <div>
-                    <label/>
-                    <button className="submit-btn" type="submit">
+                    <button type="submit" className="registration-button">
                         Register
                     </button>
-                </div>
-                <div className="new-user-register">
-                    <label/>
-                    <div>
-                        Already have an account?
-                        <Link to={`/signin?redirect=${redirect}`}>
-                            Sign In
-                        </Link>
-                    </div>
-                </div>
-            </form>
-        </div>
-    )
-}
+                </form>
 
-export default Register
+                <div className="registration-footer">
+                    <p>
+                        Already have an account? <Link to="/signin">Sign In</Link>
+                    </p>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+export default Registration;

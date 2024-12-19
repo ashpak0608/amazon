@@ -5,22 +5,29 @@ import { orderCreateReducer, orderDetailsReducer, orderMineListReducer, orderPay
 import { prodcutDetailsReducer, prodcutListReducer } from './reducers/ProductReducer';
 import { userDetailsReducer, userRegisterReducer, userSigninReducer, userUpdateProfileReducer } from './reducers/UserReducer';
 
-const initialState = {
-    cart:{
-        cartItems: localStorage.getItem('cartItems')
-         ? JSON.parse(localStorage.getItem('cartItems'))
-         : [],
-        shippingAddress: localStorage.getItem('shippingAddress')
-         ? JSON.parse(localStorage.getItem('shippingAddress'))
-         : {},
-        paymentMethod: 'PayPal',
-    },
-    userSignin:{
-        userInfo: localStorage.getItem('userInfo')
-         ? JSON.parse(localStorage.getItem('userInfo'))
-         : null,
+// Utility function to safely retrieve data from local storage
+const getFromLocalStorage = (key, defaultValue) => {
+    try {
+        const storedValue = localStorage.getItem(key);
+        return storedValue ? JSON.parse(storedValue) : defaultValue;
+    } catch (error) {
+        console.error(`Error reading ${key} from localStorage:`, error);
+        return defaultValue;
     }
 };
+
+// Initial state with safely loaded local storage values
+const initialState = {
+    cart: {
+        cartItems: getFromLocalStorage('cartItems', []),
+        shippingAddress: getFromLocalStorage('shippingAddress', {}),
+        paymentMethod: 'PayPal',
+    },
+    userSignin: {
+        userInfo: getFromLocalStorage('userInfo', null),
+    },
+};
+
 const reducer = combineReducers({
     productList: prodcutListReducer,
     productDetails: prodcutDetailsReducer,
@@ -32,10 +39,13 @@ const reducer = combineReducers({
     orderPay: orderPayReducer,
     orderMineList: orderMineListReducer,
     userDetails: userDetailsReducer,
-    userUpdateProfile : userUpdateProfileReducer
+    userUpdateProfile: userUpdateProfileReducer,
 });
 
-const composeEnhancer = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+
+const composeEnhancer =
+    (typeof window !== 'undefined' && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__) || compose;
+
 const store = createStore(
     reducer, 
     initialState,

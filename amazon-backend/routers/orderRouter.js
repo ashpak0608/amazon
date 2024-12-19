@@ -1,77 +1,69 @@
 import express from 'express';
-import expressAsyncHandler from 'express-async-handler'
-import Order from '../models/orderModel.js';
-import { isAuth } from '../utils.js';
+import { createOrder, getOrderById } from '../models/orderModel.js'; // Import MySQL queries
 
-const orderRouter = express.Router();
+const router = express.Router();
 
+// Create a new order
+router.post('/', async (req, res) => {
+    try {
+        const orderData = req.body;
 
-orderRouter.get('/mine', isAuth, expressAsyncHandler(async(req,res)=>{
-    const orders = await Order.find({user: req.user._id});
-    res.send(orders);
-}))
-
-
-orderRouter.post('/', isAuth ,expressAsyncHandler(async(req,res) => {
-        if(req.body.orderItems.length === 0){
-            res.status(400).send({
-                message: 'Cart is empty'
-            });
+        // Validate request body
+        if (!orderData.userId || !orderData.orderItems || orderData.orderItems.length === 0) {
+            return res.status(400).send({ message: 'Invalid order data provided.' });
         }
-        else{
-            const order = new Order({
-                orderItems: req.body.orderItems,
-                shippingAddress: req.body.shippingAddress,
-                paymentMethod: req.body.paymentMethod,
-                itemsPrice: req.body.itemsPrice,
-                shippingPrice: req.body.shippingPrice,
-                taxPrice: req.body.taxPrice,
-                totalPrice: req.body.totalPrice,
-                user: req.user._id
-            });
-            const createdOrder = await order.save();
-            res.status(201)
-            .send({message: "New order created.", order: createdOrder});
+
+        const order = await createOrder(orderData); // Call the model function
+        res.status(201).send({
+            message: 'Order created successfully.',
+            orderId: order.orderId,
+        });
+    } catch (error) {
+        console.error('Error creating order:', error);
+        res.status(500).send({ message: 'Error creating order. Please try again later.' });
+    }
+});
+
+// Get an order by ID
+router.get('/:id', async (req, res) => {
+    try {
+        const orderId = req.params.id;
+
+        // Validate ID
+        if (!orderId) {
+            return res.status(400).send({ message: 'Order ID is required.' });
         }
-    })
-);
 
-
-orderRouter.get('/:id', isAuth, expressAsyncHandler(async(req,res) => {
-    const order = await Order.findById(req.params.id);
-    if(order){
-        res.send(order);
+        const order = await getOrderById(orderId); // Call the model function
+        if (order) {
+            res.send({
+                message: 'Order retrieved successfully.',
+                order,
+            });
+        } else {
+            res.status(404).send({ message: 'Order not found.' });
+        }
+    } catch (error) {
+        console.error('Error fetching order by ID:', error);
+        res.status(500).send({ message: 'Error fetching order. Please try again later.' });
     }
-    else{
-        res.status(404).send({message: "Order not found."});
+});
+
+
+// Get all orders for a specific user
+router.get('/user/:userId', async (req, res) => {
+    try {
+        const orders = await getOrdersByUserId(req.params.userId); // MySQL query to get orders
+        if (orders.length > 0) {
+            res.send(orders);
+        } else {
+            res.status(404).send({ message: 'No orders found for this user' });
+        }
+    } catch (error) {
+        console.error('Error fetching orders by user:', error);
+        res.status(500).send({ message: 'Error fetching orders' });
     }
-}))
+});
 
 
-
-orderRouter.put('/:id/pay', isAuth, expressAsyncHandler(async(req,res)=>{
-    const order = await Order.findById(req.params.id);
-
-    if(order){
-        order.isPaid = true;
-        order.paidAt = Date.now();
-        order.paymentResult = {
-            id: req.body.id,
-            status: req.body.status,
-            update_time: req.body.update_time,
-            email_address: req.body.email_address,
-        };
-
-        const updateOrder = await order.save();
-        res.send({
-            message: "Order paid.",
-            order: updateOrder
-        })
-    }
-    else{
-        res.status(404).send({message: "Order not found."});
-    }
-}))
-
-
-export default orderRouter;
+export default router;
